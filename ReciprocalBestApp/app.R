@@ -72,19 +72,19 @@ server <- function(input, output,session) {
                    header = FALSE,
                    sep = ",") %>% select(V1)
     
-    write.table(df,"sessionFolder/file1.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
+    write.table(df,"file1.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
     
     # read 2nd fasta and write to the data folder :
     df <- read.csv(input$file2$datapath,
                    header = FALSE,
                    sep = ",") %>% select(V1)
     
-    write.table(df,"sessionFolder/file2.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
+    write.table(df,"file2.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
     
     # run rbhXpress :
-    rbh_command_line <- "bash scripts/rbhXpress/rbhXpress.sh -a sessionFolder/file1.fa -b sessionFolder/file2.fa -t 1 -o sessionFolder/reciprocal_best_hits.tab"
+    rbh_command_line <- "bash scripts/rbhXpress/rbhXpress.sh -a file1.fa -b file2.fa -t 1 -o reciprocal_best_hits.tab"
     system(rbh_command_line,intern = F)
-    orthologs <- read.csv("sessionFolder/reciprocal_best_hits.tab",header = FALSE,sep="\t")
+    orthologs <- read.csv("reciprocal_best_hits.tab",header = FALSE,sep="\t")
     
     # display amount of orthologs found and download button :
     output$rbhXpressLOG <- renderText({paste0("Found ",length(orthologs$V1)," reciprocal best hits !")})
@@ -96,10 +96,10 @@ server <- function(input, output,session) {
                                             write.table(orthologs,file,col.names = FALSE,row.names = FALSE,sep = "\t",quote = FALSE)
                                           })
   })
-  session$onSessionEnded(function() { unlink(c("sessionFolder/file1.fa",
-                                             "sessionFolder/file2.fa",
-                                             "sessionFolder/reciprocal_best_hits.tab",
-                                             "sessionFolder/reciprocal_best_hits.tab.log") )})
+  session$onSessionEnded(function() { unlink(c("file1.fa",
+                                             "file2.fa",
+                                             "reciprocal_best_hits.tab",
+                                             "reciprocal_best_hits.tab.log") )})
 }
 
 # Create Shiny app ----
