@@ -79,8 +79,8 @@ server <- function(input, output,session) {
     
     # run rbhXpress :
     rbh_command_line <- "bash scripts/rbhXpress/rbhXpress.sh -a sessionFolder/file1.fa -b sessionFolder/file2.fa -t 1 -o sessionFolder/reciprocal_best_hits.tab"
-    system(rbh_command_line,intern = F)
-    orthologs <- read.csv("sessionFolder/reciprocal_best_hits.tab",header = FALSE,sep="\t")
+    orthologs <- read.table(text = system(rbh_command_line,intern = T),header = FALSE, sep = "\t")
+    # orthologs <- read.csv("sessionFolder/reciprocal_best_hits.tab",header = FALSE,sep="\t")
     
     # display amount of orthologs found and download button :
     output$rbhXpressLOG <- renderText({paste0("Found ",length(orthologs$V1)," reciprocal best hits !")})
@@ -94,8 +94,12 @@ server <- function(input, output,session) {
   })
   session$onSessionEnded(function() { unlink(c("sessionFolder/file1.fa",
                                              "sessionFolder/file2.fa",
-                                             "sessionFolder/reciprocal_best_hits.tab",
-                                             "sessionFolder/reciprocal_best_hits.tab.log") )})
+                                             "sessionFolder/p1.dmnd",
+                                             "sessionFolder/p2.dmnd",
+                                             "sessionFolder/p1_p2",
+                                             "sessionFolder/p1_p2.s",
+                                             "sessionFolder/p2_p1",
+                                             "sessionFolder/p2_p1.s") )})
 }
 
 # Create Shiny app ----
