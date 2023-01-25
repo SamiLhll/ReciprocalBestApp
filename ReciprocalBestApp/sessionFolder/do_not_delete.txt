@@ -1,0 +1,3 @@
+This file shouldn't be releted as when deploying the app, the folder
+"sessionFolder" won't be written if empty.
+Have to find a workaround for this.
