@@ -99,7 +99,8 @@ server <- function(input, output,session) {
   session$onSessionEnded(function() { unlink(c("sessionFolder/file1.fa",
                                                "sessionFolder/file2.fa",
                                                "sessionFolder/reciprocal_best_hits.tab",
-                                               "p1_p2","p2.dmnd","p2_p1.s","p1.dmnd","p1_p2.s","p2_p1") )})
+                                               "sessionFolder/p1_p2","sessionFolder/p2.dmnd","sessionFolder/p2_p1.s",
+                                               "sessionFolder/p1.dmnd","sessionFolder/p1_p2.s","sessionFolder/p2_p1") )})
 }
 
 # Create Shiny app ----
