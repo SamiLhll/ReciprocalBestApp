@@ -39,13 +39,17 @@ ui <- fluidPage(
       actionButton("do","Compute orthologs")
     ),
     
-    # Main panel using verbatimTextOutput and uiOutput chunks
-    # That will display only when the orthologs are computed and
-    # the data can be downloaded :
-    
+    # Main panel for displaying outputs ----
     mainPanel(
       verbatimTextOutput("rbhXpressLOG"),
       uiOutput("DownloadData")
+      # downloadButton("DownloadData","Download")
+      
+      
+      
+      # Output: Data file ----
+      
+      
       
     )
     
@@ -62,7 +66,7 @@ server <- function(input, output,session) {
     # The whole process can be called only if the two fasta files were successfully uploaded :
     req(input$file1)
     req(input$file2)
-    random_number_session <- sample(1:5000,1)
+    
     # read 1st fasta and write to the data folder :
     df <- read.csv(input$file1$datapath,
                    header = FALSE,
@@ -71,16 +75,16 @@ server <- function(input, output,session) {
     write.table(df,"sessionFolder/file1.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
     
     # read 2nd fasta and write to the data folder :
-    df2 <- read.csv(input$file2$datapath,
+    df <- read.csv(input$file2$datapath,
                    header = FALSE,
                    sep = ",") %>% select(V1)
     
-    write.table(df2,"sessionFolder/file2.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
+    write.table(df,"sessionFolder/file2.fa",col.names = FALSE,row.names = FALSE,sep=",", quote = FALSE)
     
     # run rbhXpress :
-    rbh_command_line <- "bash scripts/rbhXpress/rbhXpress.sh -a sessionFolder/file1.fa -b sessionFolder/file2.fa -t 1 -o sessionFolder/reciprocal_best_hits.tab"
-    orthologs <- read.table(text = system(rbh_command_line,intern = T),header = FALSE, sep = "\t")
-    # orthologs <- read.csv("sessionFolder/reciprocal_best_hits.tab",header = FALSE,sep="\t")
+    rbh_command_line <- "bash scripts/rbhXpress/rbhXpress.sh -a sessionFolder/file1.fa -b sessionFolder/file2.fa -t 1 > sessionFolder/reciprocal_best_hits.tab"
+    system(rbh_command_line,intern = F)
+    orthologs <- read.csv("sessionFolder/reciprocal_best_hits.tab",header = FALSE,sep="\t")
     
     # display amount of orthologs found and download button :
     output$rbhXpressLOG <- renderText({paste0("Found ",length(orthologs$V1)," reciprocal best hits !")})
@@ -93,13 +97,9 @@ server <- function(input, output,session) {
                                           })
   })
   session$onSessionEnded(function() { unlink(c("sessionFolder/file1.fa",
-                                             "sessionFolder/file2.fa",
-                                             "sessionFolder/p1.dmnd",
-                                             "sessionFolder/p2.dmnd",
-                                             "sessionFolder/p1_p2",
-                                             "sessionFolder/p1_p2.s",
-                                             "sessionFolder/p2_p1",
-                                             "sessionFolder/p2_p1.s") )})
+                                               "sessionFolder/file2.fa",
+                                               "sessionFolder/reciprocal_best_hits.tab",
+                                               "p1_p2","p2.dmnd","p2_p1.s","p1.dmnd","p1_p2.s","p2_p1") )})
 }
 
 # Create Shiny app ----
